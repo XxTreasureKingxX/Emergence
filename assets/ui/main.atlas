@@ -1,0 +1,11 @@
+main.png
+size:128,128
+repeat:none
+blank.png
+bounds:96,8,16,16
+buttonOver.png
+bounds:2,70,112,42
+buttonUp.png
+bounds:2,26,112,42
+label.png
+bounds:2,2,92,22

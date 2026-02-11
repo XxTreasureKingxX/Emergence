@@ -30,7 +30,6 @@ public class RenderSystem extends EntitySystem {
     private final AssetManager assetManager;
     private final FitViewport viewport;
     private final World world;
-    Texture texture;
 
     private final Box2DDebugRenderer debugRenderer;
 
@@ -44,7 +43,6 @@ public class RenderSystem extends EntitySystem {
         this.viewport = viewport;
 
         assetManager = core.getAssetManager();
-        texture = assetManager.get("ui/gameBackground.png", Texture.class);
 
         debugRenderer = new Box2DDebugRenderer();
         animations = new EnumMap<>(AnimationType.class);
@@ -57,22 +55,8 @@ public class RenderSystem extends EntitySystem {
 
     @Override
     public void update(float delta) {
-        viewport.apply();
         batch.setProjectionMatrix(viewport.getCamera().combined);
         batch.begin();
-        batch.draw(texture, 0, 0, Core.GAMEW, Core.GAMEH);
-
-        for(Entity entity : animatedEntities) {
-            final B2DComponent b2dComponent = ECSEngine.b2dCmpMpr.get(entity);
-
-            float width = b2dComponent.width;
-            float height = b2dComponent.height;
-
-            final Sprite noSpawnArea = new Sprite(assetManager.get("noSpawnArea.png", Texture.class));
-            //noSpawnArea.setBounds(b2dComponent.renderPosition.x - width * 0.9f, b2dComponent.renderPosition.y - height * 0.9f, width*2 * 0.9f, height*2 * 0.9f);
-            noSpawnArea.setBounds(b2dComponent.renderPosition.x - width, b2dComponent.renderPosition.y - height, width*2, height*2);
-            noSpawnArea.draw(batch);
-        }
 
         for(Entity entity : animatedEntities) {
             final AnimationComponent animationComponent = ECSEngine.aniCmpMpr.get(entity);
@@ -135,9 +119,5 @@ public class RenderSystem extends EntitySystem {
         animatedEntities = null;
         animations.clear();
         debugRenderer.dispose();
-    }
-
-    public void resize(int width, int height) {
-        viewport.update(width, height, true);
     }
 }

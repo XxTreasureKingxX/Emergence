@@ -10,8 +10,8 @@ public enum AnimationType {
     VENUS("objects.atlas", "objects", 1f, 6, 48),
     MARS("objects.atlas", "objects", 1f, 7, 40),
     MERCURY("objects.atlas", "objects", 1f, 8, 32),
-    HOLE("objects.atlas", "objects", 0.2f, 9, 32),
-    ANOMALY("objects.atlas", "objects", 0.2f, 10, 28);
+    HOLE("objects.atlas", "objects", 0.1f, 9, 32),
+    ANOMALY("objects.atlas", "objects", 1f, 10, 28);
 
     final String atlas;
     final String region;

@@ -17,6 +17,8 @@ public class Core extends Game {
     public static final float BORDER_SIZE = GAMEH * 0.71f;
     public static final float FPS = 1 / 60f;
     public static final int REGION_SIZE = 128;
+    public static final int baseExp = 1;
+    public static final int antiSpawnRadiusDistance = 32;
 
     public static final short BIT_OBJECT = 1 << 0;
     public static final short BIT_WALL = 1 << 1;

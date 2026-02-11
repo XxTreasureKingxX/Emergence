@@ -25,6 +25,7 @@ public class ECSEngine extends PooledEngine {
     private final CollisionSystem collisionSystem;
     private final GameUISystem gameUISystem;
     private final RenderSystem renderSystem;
+    private final ObjectAntiSpawnRadiusSystem OASRSystem;
 
     public int blackHoleCounter = 0;
     public Vector2 blackHolePosition;
@@ -47,9 +48,10 @@ public class ECSEngine extends PooledEngine {
         bodyHandleSystem = new BodyHandleSystem(this, physicsSystem.getWorld());
         collisionSystem = new CollisionSystem(core, this, physicsSystem.getContactListener());
         gameUISystem = new GameUISystem(core, viewport);
+        OASRSystem = new ObjectAntiSpawnRadiusSystem(core, batch, viewport);
         renderSystem = new RenderSystem(core, batch, physicsSystem.getWorld(), viewport);
 
-        this.addSystem(new SpawnSystem(this));
+        this.addSystem(new SpawnSystem(core, this));
         this.addSystem(new AnimationSystem());
         this.addSystem(new BlackHoleSystem(this));
         this.addSystem(physicsSystem);
@@ -57,6 +59,8 @@ public class ECSEngine extends PooledEngine {
         this.addSystem(new EvolutionSystem(this));
         this.addSystem(gameUISystem);
         this.addSystem(bodyHandleSystem);
+        this.addSystem(new BackgroundRenderSystem(core, batch, viewport));
+        this.addSystem(OASRSystem);
         this.addSystem(renderSystem);
     }
 
@@ -115,7 +119,7 @@ public class ECSEngine extends PooledEngine {
     }
 
     public void resize(int width, int height) {
-        renderSystem.resize(width, height);
-        gameUISystem.resize(width, height);
+        OASRSystem.resize(width, height);
+        viewport.update(width, height);
     }
 }

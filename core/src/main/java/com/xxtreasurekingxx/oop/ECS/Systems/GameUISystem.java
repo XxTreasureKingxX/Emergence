@@ -29,11 +29,10 @@ public class GameUISystem extends IteratingSystem {
     private BitmapFont font;
     private TextureAtlas atlas;
 
-    private Table uiTable;
-
     private Label.LabelStyle blankLabelStyle;
     private Label.LabelStyle blackLabelStyle;
     private Label scoreLabel;
+    private Label tokenLabel;
 
     public GameUISystem(final Core core, final FitViewport viewport) {
         super(Family.all(ActorComponent.class, B2DComponent.class, ObjectComponent.class).get());
@@ -46,26 +45,28 @@ public class GameUISystem extends IteratingSystem {
         initFiles();
         initStyles();
 
-        scoreLabel = new Label("Score:" + core.getGameData().getScore(), blackLabelStyle);
+        scoreLabel = new Label("Score: " + core.getGameData().getScore(), blackLabelStyle);
         scoreLabel.setAlignment(Align.center);
         scoreLabel.setFontScale(1f);
-        scoreLabel.setPosition(Core.GAMEW/2f - scoreLabel.getWidth()/2, Core.GAMEH - scoreLabel.getHeight() * 1.5f);
+        scoreLabel.setPosition(Core.GAMEW/2f - scoreLabel.getWidth(), Core.GAMEH - scoreLabel.getHeight() * 1.5f);
+
+        tokenLabel = new Label("Tokens: " + core.getGameData().getTokens(), blackLabelStyle);
+        tokenLabel.setAlignment(Align.center);
+        tokenLabel.setFontScale(1f);
+        tokenLabel.setPosition(Core.GAMEW/2f, Core.GAMEH - tokenLabel.getHeight() * 1.5f);
 
         stage.addActor(scoreLabel);
+        stage.addActor(tokenLabel);
     }
 
     public void update(float delta) {
         super.update(delta);
 
-        System.out.println(core.getGameData().getScore());
-        scoreLabel.setText("Score:" + core.getGameData().getScore());
+        scoreLabel.setText("Score: " + core.getGameData().getScore());
+        tokenLabel.setText("Tokens: " + core.getGameData().getTokens());
 
         viewport.apply();
         stage.act(delta);
-    }
-
-    public void resize(int width, int height) {
-        viewport.update(width, height, true);
     }
 
     private void initStyles() {

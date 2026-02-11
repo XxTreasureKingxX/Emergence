@@ -3,6 +3,7 @@ package com.xxtreasurekingxx.oop.Screens;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g3d.Shader;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.xxtreasurekingxx.oop.Core;
 
@@ -63,6 +64,7 @@ public class LoadingScreen implements Screen {
         assetManager.load("ui/menuBackground.png", Texture.class);
         assetManager.load("ui/gameBackground.png", Texture.class);
         assetManager.load("noSpawnArea.png", Texture.class);
+        assetManager.load("noSpawnAreaBorder.png", Texture.class);
         assetManager.load("ui/main.atlas", TextureAtlas.class);
         assetManager.load("objects.atlas", TextureAtlas.class);
     }

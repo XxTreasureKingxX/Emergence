@@ -10,6 +10,8 @@ import com.xxtreasurekingxx.oop.ECS.ECSEngine;
 import com.xxtreasurekingxx.oop.World.ObjectType;
 import com.xxtreasurekingxx.oop.World.WorldContactListener;
 
+import static com.xxtreasurekingxx.oop.Core.baseExp;
+
 public class CollisionSystem extends EntitySystem implements WorldContactListener.CollisionListener {
     private final ECSEngine engine;
     private final Core core;
@@ -49,30 +51,28 @@ public class CollisionSystem extends EntitySystem implements WorldContactListene
                 return;
             }
 
+            if(OCA.type != OCB.type) {
+                return;
+            }
+
             if (OCA.exp == OCB.exp) {
-                if(OCA.type != OCB.type) {
-                   return;
-                }
                 BCB.needsDelete = true;
                 ACB.needsDelete = true;
-                OCA.exp += OCA.exp == 0 ? 10 : OCB.exp;
-                core.getGameData().addScore(OCA.exp == 0 ? 10 : OCB.exp);
+                OCA.exp += OCA.exp == 0 ? baseExp : OCB.exp;
+                core.getGameData().addScore(OCA.exp == 0 ? baseExp : OCB.exp);
+                core.getGameData().addTokens(OCA.type.getUpgradeThreshold());
             } else if (OCA.exp > OCB.exp) {
-                if(OCA.type != OCB.type) {
-                    return;
-                }
                 BCB.needsDelete = true;
                 ACB.needsDelete = true;
-                OCA.exp += OCB.exp > 0 ? OCB.exp : 10;
-                core.getGameData().addScore(OCB.exp > 0 ? OCB.exp : 10);
+                OCA.exp += OCB.exp > 0 ? OCB.exp : baseExp;
+                core.getGameData().addScore(OCB.exp > 0 ? OCB.exp : baseExp);
+                core.getGameData().addTokens(OCA.type.getUpgradeThreshold());
             } else {
-                if(OCA.type != OCB.type) {
-                    return;
-                }
                 BCA.needsDelete = true;
                 ACA.needsDelete = true;
-                OCB.exp += OCA.exp > 0 ? OCA.exp : 10;
-                core.getGameData().addScore(OCA.exp > 0 ? OCA.exp : 10);
+                OCB.exp += OCA.exp > 0 ? OCA.exp : baseExp;
+                core.getGameData().addScore(OCA.exp > 0 ? OCA.exp : baseExp);
+                core.getGameData().addTokens(OCB.type.getUpgradeThreshold());
             }
         }
     }
