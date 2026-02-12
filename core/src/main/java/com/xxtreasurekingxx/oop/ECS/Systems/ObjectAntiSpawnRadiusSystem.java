@@ -25,6 +25,7 @@ import com.xxtreasurekingxx.oop.Core;
 import com.xxtreasurekingxx.oop.ECS.Components.AnimationComponent;
 import com.xxtreasurekingxx.oop.ECS.Components.B2DComponent;
 import com.xxtreasurekingxx.oop.ECS.Components.BlackHoleComponent;
+import com.xxtreasurekingxx.oop.ECS.Components.ObjectComponent;
 import com.xxtreasurekingxx.oop.ECS.ECSEngine;
 
 import static com.badlogic.gdx.math.MathUtils.random;
@@ -64,7 +65,7 @@ public class ObjectAntiSpawnRadiusSystem extends EntitySystem {
 
     @Override
     public void addedToEngine(Engine engine) {
-        animatedEntities = getEngine().getEntitiesFor(Family.all(AnimationComponent.class, B2DComponent.class).exclude(BlackHoleComponent.class).get());
+        animatedEntities = getEngine().getEntitiesFor(Family.all(AnimationComponent.class, B2DComponent.class, ObjectComponent.class).exclude(BlackHoleComponent.class).get());
     }
 
     @Override

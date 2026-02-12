@@ -2,8 +2,8 @@ package com.xxtreasurekingxx.oop.Screens;
 
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g3d.Shader;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.xxtreasurekingxx.oop.Core;
 
@@ -67,5 +67,7 @@ public class LoadingScreen implements Screen {
         assetManager.load("noSpawnAreaBorder.png", Texture.class);
         assetManager.load("ui/main.atlas", TextureAtlas.class);
         assetManager.load("objects.atlas", TextureAtlas.class);
+        assetManager.load("ring.atlas", TextureAtlas.class);
+        assetManager.load("particles/circle.p", ParticleEffect.class);
     }
 }

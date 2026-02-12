@@ -7,7 +7,7 @@ public class GameData {
 
     public GameData(final Core core) {
         this.core = core;
-        addTokens(3);
+        addTokens(100);
     }
 
     public void addScore(int score) {

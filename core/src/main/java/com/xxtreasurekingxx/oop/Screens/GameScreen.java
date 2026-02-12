@@ -93,10 +93,10 @@ public class GameScreen implements Screen, InputListener {
         Array<Vector2> positions = genPositions(spawnCount);
 
         for(int i = 0; i < spawnCount - 1; i++) {
-            engine.createObject(positions.first(), ObjectType.MERCURY, false, baseExp);
+            engine.createObject(positions.first(), ObjectType.MERCURY, false, baseExp, false);
             positions.removeValue(positions.first(), true);
         }
-        engine.createObject(positions.first(), ObjectType.ANOMALY, false, 0);
+        engine.createObject(positions.first(), ObjectType.ANOMALY, false, 0, false);
     }
 
     private Array<Vector2> genPositions(final int spawnCount) {

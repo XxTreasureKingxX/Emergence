@@ -66,7 +66,7 @@ public class SpawnSystem extends IteratingSystem {
                 }
             }
             if(!tooClose) {
-                engine.createObject(new Vector2(xRand, yRand), ObjectType.ANOMALY, false, 0);
+                engine.createObject(new Vector2(xRand, yRand), ObjectType.ANOMALY, false, 0, false);
             }
         }
         positions.clear();
@@ -99,7 +99,7 @@ public class SpawnSystem extends IteratingSystem {
             }
             if(!tooClose) {
                 core.getGameData().addScore(baseExp);
-                engine.createObject(new Vector2(xRand, yRand), ObjectType.MERCURY, false, baseExp);
+                engine.createObject(new Vector2(xRand, yRand), ObjectType.MERCURY, false, baseExp, false);
             }
         }
         positions.clear();

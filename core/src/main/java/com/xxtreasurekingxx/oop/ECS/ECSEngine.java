@@ -6,6 +6,7 @@ import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.xxtreasurekingxx.oop.Core;
 import com.xxtreasurekingxx.oop.ECS.Components.*;
@@ -13,6 +14,7 @@ import com.xxtreasurekingxx.oop.ECS.Systems.*;
 import com.xxtreasurekingxx.oop.World.ObjectType;
 
 import static com.badlogic.gdx.math.MathUtils.random;
+import static com.xxtreasurekingxx.oop.World.AnimationType.RING;
 
 public class ECSEngine extends PooledEngine {
     private final Core core;
@@ -35,6 +37,7 @@ public class ECSEngine extends PooledEngine {
     public static final ComponentMapper<ObjectComponent> objCmpMpr = ComponentMapper.getFor(ObjectComponent.class);
     public static final ComponentMapper<BlackHoleComponent> blkHoleCmpMpr = ComponentMapper.getFor(BlackHoleComponent.class);
     public static final ComponentMapper<ActorComponent> actCmpMpr = ComponentMapper.getFor(ActorComponent.class);
+    public static final ComponentMapper<ParticleComponent> ptclCmpMpr = ComponentMapper.getFor(ParticleComponent.class);
 
     public ECSEngine(final Core core, final FitViewport viewport) {
         super();
@@ -51,6 +54,7 @@ public class ECSEngine extends PooledEngine {
         OASRSystem = new ObjectAntiSpawnRadiusSystem(core, batch, viewport);
         renderSystem = new RenderSystem(core, batch, physicsSystem.getWorld(), viewport);
 
+        this.addSystem(new ParticleSystem(core));
         this.addSystem(new SpawnSystem(core, this));
         this.addSystem(new AnimationSystem());
         this.addSystem(new BlackHoleSystem(this));
@@ -64,7 +68,7 @@ public class ECSEngine extends PooledEngine {
         this.addSystem(renderSystem);
     }
 
-    public void createObject(final Vector2 pos, final ObjectType type, final boolean squareShape, final int startingExp) {
+    public void createObject(final Vector2 pos, final ObjectType type, final boolean squareShape, final int startingExp, final boolean spawnParticle) {
         Entity object = this.createEntity();
 
         //B2DComponent
@@ -101,7 +105,36 @@ public class ECSEngine extends PooledEngine {
         }
         object.add(actorComponent);
 
+        ParticleComponent particleComponent = this.createComponent(ParticleComponent.class);
+        particleComponent.particles = new Array<>();
+        particleComponent.position = pos;
+        particleComponent.type = ParticleComponent.ParticlesType.EXPLOSION;
+        particleComponent.scale = 0.5f;
+        object.add(particleComponent);
+
+        if(spawnParticle) {
+            this.getSystem(ParticleSystem.class).addParticle(particleComponent, pos.x, pos.y);
+        }
+
         this.addEntity(object);
+    }
+
+    public void createCollisionRing(final ObjectType type, final Vector2 position) {
+        final Entity entity = this.createEntity();
+        System.out.println("creating collision ring");
+        //B2DComponent
+        B2DComponent b2DComponent = this.createComponent(B2DComponent.class);
+        b2DComponent.renderPosition = new Vector2(position);
+        b2DComponent.width = type.getAnimationType().getDiameter();
+        b2DComponent.height = type.getAnimationType().getDiameter();
+        entity.add(b2DComponent);
+
+        //AnimationComponent
+        AnimationComponent animationComponent = this.createComponent(AnimationComponent.class);
+        animationComponent.type = RING;
+        entity.add(animationComponent);
+
+        this.addEntity(entity);
     }
 
     public void createGameBorder() {

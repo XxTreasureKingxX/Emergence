@@ -6,17 +6,23 @@ import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.xxtreasurekingxx.oop.Core;
 import com.xxtreasurekingxx.oop.ECS.Components.AnimationComponent;
 import com.xxtreasurekingxx.oop.ECS.Components.B2DComponent;
+import com.xxtreasurekingxx.oop.ECS.Components.ObjectComponent;
+import com.xxtreasurekingxx.oop.ECS.Components.ParticleComponent;
 import com.xxtreasurekingxx.oop.ECS.ECSEngine;
 import com.xxtreasurekingxx.oop.World.AnimationType;
 
@@ -33,6 +39,8 @@ public class RenderSystem extends EntitySystem {
 
     private final Box2DDebugRenderer debugRenderer;
 
+    private ImmutableArray<Entity> ringEntities;
+    private ImmutableArray<Entity> particleEntities;
     private ImmutableArray<Entity> animatedEntities;
     private EnumMap<AnimationType, Animation<Sprite>> animations;
 
@@ -51,6 +59,7 @@ public class RenderSystem extends EntitySystem {
     @Override
     public void addedToEngine(Engine engine) {
         animatedEntities = getEngine().getEntitiesFor(Family.all(AnimationComponent.class, B2DComponent.class).get());
+        particleEntities = getEngine().getEntitiesFor(Family.all(ParticleComponent.class).get());
     }
 
     @Override
@@ -58,13 +67,41 @@ public class RenderSystem extends EntitySystem {
         batch.setProjectionMatrix(viewport.getCamera().combined);
         batch.begin();
 
+        ringEntities = getEngine().getEntitiesFor(Family.all(AnimationComponent.class, B2DComponent.class).exclude(ObjectComponent.class).get());
+
+        for(Entity ring : ringEntities) {
+            final AnimationComponent animationComponent = ECSEngine.aniCmpMpr.get(ring);
+            final B2DComponent b2dComponent = ECSEngine.b2dCmpMpr.get(ring);
+
+            if(animationComponent.type != null) {
+                final Animation<Sprite> animation = getAnimation(animationComponent.type);
+                final Sprite frame = animation.getKeyFrame(animationComponent.animationTimer);
+                b2dComponent.renderPosition.set(b2dComponent.renderPosition.x, b2dComponent.renderPosition.y);
+
+                float scale = Interpolation.pow2Out.apply((animationComponent.animationTimer+2.2f));
+
+                float width = b2dComponent.width;
+                float height = b2dComponent.height;
+                width *= scale;
+                height *= scale;
+
+                if(frame.getColor().a > 0 && animationComponent.animationTimer <= 1.5f) {
+                    frame.setAlpha(1-(animationComponent.animationTimer));
+                } else {
+                    frame.setAlpha(0);
+                }
+
+                frame.setBounds(b2dComponent.renderPosition.x - width/2, b2dComponent.renderPosition.y - height/2, width, height);
+                frame.setOriginCenter();
+                frame.draw(batch);
+            }
+        }
+
         for(Entity entity : animatedEntities) {
             final AnimationComponent animationComponent = ECSEngine.aniCmpMpr.get(entity);
             final B2DComponent b2dComponent = ECSEngine.b2dCmpMpr.get(entity);
 
-            animationComponent.animationTimer += delta;
-
-            if(animationComponent.type != null) {
+            if(animationComponent.type != null && animationComponent.type != AnimationType.RING) {
                 final Animation<Sprite> animation = getAnimation(animationComponent.type);
                 animation.setPlayMode(Animation.PlayMode.LOOP);
                 final Sprite frame = animation.getKeyFrame(animationComponent.animationTimer);
@@ -87,6 +124,15 @@ public class RenderSystem extends EntitySystem {
                 frame.draw(batch);
             }
         }
+        for(Entity entity : particleEntities) {
+            ParticleComponent particleComponent = ECSEngine.ptclCmpMpr.get(entity);
+            for(ParticleEffect particle : particleComponent.particles) {
+                if(particle != null) {
+                    particle.draw(batch);
+                }
+            }
+        }
+        batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         batch.end();
         //debugRenderer.render(world, viewport.getCamera().combined);
     }

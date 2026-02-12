@@ -6,11 +6,13 @@ import com.xxtreasurekingxx.oop.Core;
 import com.xxtreasurekingxx.oop.ECS.Components.B2DComponent;
 import com.xxtreasurekingxx.oop.ECS.Components.ActorComponent;
 import com.xxtreasurekingxx.oop.ECS.Components.ObjectComponent;
+import com.xxtreasurekingxx.oop.ECS.Components.ParticleComponent;
 import com.xxtreasurekingxx.oop.ECS.ECSEngine;
 import com.xxtreasurekingxx.oop.World.ObjectType;
 import com.xxtreasurekingxx.oop.World.WorldContactListener;
 
 import static com.xxtreasurekingxx.oop.Core.baseExp;
+import static com.xxtreasurekingxx.oop.ECS.Components.ParticleComponent.ParticlesType.EXPLOSION;
 
 public class CollisionSystem extends EntitySystem implements WorldContactListener.CollisionListener {
     private final ECSEngine engine;
@@ -33,6 +35,9 @@ public class CollisionSystem extends EntitySystem implements WorldContactListene
         final ActorComponent ACA = ECSEngine.actCmpMpr.get(entityA);
         final ActorComponent ACB = ECSEngine.actCmpMpr.get(entityB);
 
+        final ParticleComponent PCA = ECSEngine.ptclCmpMpr.get(entityA);
+        final ParticleComponent PCB = ECSEngine.ptclCmpMpr.get(entityB);
+
         if(OCA != null && OCB != null) {
             //delete all objects that collide with black hole (prio 1)
             if(OCA.type == ObjectType.HOLE) {
@@ -45,7 +50,7 @@ public class CollisionSystem extends EntitySystem implements WorldContactListene
                 core.getGameData().removeScore(OCA.exp);
             }
             //do nothing more if any objects should not do anything on collide (prio 2)
-            if (OCA.type == ObjectType.ANOMALY || OCB.type == ObjectType.ANOMALY ||
+            if(OCA.type == ObjectType.ANOMALY || OCB.type == ObjectType.ANOMALY ||
                 OCA.type == ObjectType.HOLE    || OCB.type == ObjectType.HOLE ||
                 OCA.type == ObjectType.SUN     || OCB.type == ObjectType.SUN) {
                 return;
@@ -55,13 +60,13 @@ public class CollisionSystem extends EntitySystem implements WorldContactListene
                 return;
             }
 
-            if (OCA.exp == OCB.exp) {
+            if(OCA.exp == OCB.exp) {
                 BCB.needsDelete = true;
                 ACB.needsDelete = true;
                 OCA.exp += OCA.exp == 0 ? baseExp : OCB.exp;
                 core.getGameData().addScore(OCA.exp == 0 ? baseExp : OCB.exp);
                 core.getGameData().addTokens(OCA.type.getUpgradeThreshold());
-            } else if (OCA.exp > OCB.exp) {
+            } else if(OCA.exp > OCB.exp) {
                 BCB.needsDelete = true;
                 ACB.needsDelete = true;
                 OCA.exp += OCB.exp > 0 ? OCB.exp : baseExp;
