@@ -17,7 +17,7 @@
   <!-- You must change this if you rename packages later, or rename GwtLauncher. -->
   <entry-point class="com.xxtreasurekingxx.oop.gwt.GwtLauncher" />
 
-  <!-- Reflection includes may be needed for your code or library code. Each value is separated by periods ('.'). -->
+    <!-- Reflection includes may be needed for your code or library code. Each value is separated by periods ('.'). -->
   <!-- You can include a full package by not including the name of a type at the end. -->
   <!-- This is a feature of libGDX, so these lines go after the above "inherits" that brings in libGDX. -->
   <!-- <extend-configuration-property name="gdx.reflect.include" value="fully.qualified.TypeName" /> -->

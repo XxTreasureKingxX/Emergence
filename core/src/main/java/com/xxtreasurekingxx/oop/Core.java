@@ -1,6 +1,8 @@
 package com.xxtreasurekingxx.oop;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.xxtreasurekingxx.oop.Input.InputManager;
@@ -16,12 +18,14 @@ public class Core extends Game {
     public static final int GAMEW = 480;
     public static final float BORDER_SIZE = GAMEH * 0.71f;
     public static final float FPS = 1 / 60f;
-    public static final int REGION_SIZE = 128;
+    public static final int REGION_SIZE = 512;
     public static final int baseExp = 1;
     public static final int antiSpawnRadiusDistance = 32;
 
     public static final short BIT_OBJECT = 1 << 0;
     public static final short BIT_WALL = 1 << 1;
+
+    public static boolean tutorial = false;
 
     private SplashScreen splashScreen;
     private LoadingScreen loadingScreen;
@@ -33,9 +37,14 @@ public class Core extends Game {
     private AssetManager assetManager;
     private InputManager inputManager;
 
+    private InputMultiplexer inputMultiplexer;
+
     @Override
     public void create() {
         inputManager = new InputManager();
+        inputMultiplexer = new InputMultiplexer();
+        inputMultiplexer.addProcessor(inputManager);
+        Gdx.input.setInputProcessor(inputMultiplexer);
         batch = new SpriteBatch();
         assetManager = new AssetManager();
 
@@ -65,6 +74,10 @@ public class Core extends Game {
         return gameData;
     }
 
+    public InputMultiplexer getInputMultiplexer() {
+        return inputMultiplexer;
+    }
+
     @Override
     public void dispose() {
         super.dispose();
@@ -72,3 +85,13 @@ public class Core extends Game {
         assetManager.dispose();
     }
 }
+
+/*TODO:
+   Implement the tick system so the timer/timers can be paused when menus are opened
+   Fix hand area bounds
+   Work on art <33
+
+   Rumble sfx when bigger planets combine
+
+   //Spawning a black hole will reduce score to reward skill and strategic plays & combos
+*/

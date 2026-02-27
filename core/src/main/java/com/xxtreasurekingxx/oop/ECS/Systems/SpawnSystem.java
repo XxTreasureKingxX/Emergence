@@ -18,12 +18,18 @@ import java.util.HashMap;
 import static com.badlogic.gdx.math.MathUtils.random;
 import static com.xxtreasurekingxx.oop.Core.antiSpawnRadiusDistance;
 import static com.xxtreasurekingxx.oop.Core.baseExp;
+import static com.xxtreasurekingxx.oop.ECS.Systems.CollisionSystem.collisionStarted;
 
 public class SpawnSystem extends IteratingSystem {
     private final Core core;
     private final ECSEngine engine;
     private final HashMap<Vector2, Integer> positions;
     private ImmutableArray<Entity> entities;
+
+    private float timer;
+    public static final int timerCooldown = 8;
+    private int fullBoardCounter;
+    public static boolean boardIsFull;
 
     public SpawnSystem(final Core core, final ECSEngine engine) {
         super(Family.all(B2DComponent.class, ObjectComponent.class).get());
@@ -35,6 +41,24 @@ public class SpawnSystem extends IteratingSystem {
     public void update(float deltaTime) {
         super.update(deltaTime);
         entities = getEntities();
+
+        if(fullBoardCounter > 2) {
+            boardIsFull = true;
+            fullBoardCounter = 0;
+        }
+
+        if(collisionStarted) {
+            boardIsFull = false;
+            collisionStarted = false;
+        }
+
+        timer += deltaTime;
+        if(timer >= timerCooldown) {
+            timer = 0;
+            if(!boardIsFull) {
+                spawnBaseObject();
+            }
+        }
     }
 
     @Override
@@ -92,7 +116,7 @@ public class SpawnSystem extends IteratingSystem {
                     attempts--;
                     System.out.println(attempts);
                     if(attempts == 0) {
-                        core.getGameData().addTokens(1);
+                        fullBoardCounter++;
                     }
                     break;
                 }
@@ -103,5 +127,42 @@ public class SpawnSystem extends IteratingSystem {
             }
         }
         positions.clear();
+    }
+
+    public void spawnGoldObject() {
+        int attempts = 15000;
+        for(Entity entity : entities) {
+            B2DComponent b2dComponent = ECSEngine.b2dCmpMpr.get(entity);
+            ObjectComponent objectComponent = ECSEngine.objCmpMpr.get(entity);
+            positions.put(b2dComponent.renderPosition, (objectComponent.type.getAnimationType().getDiameter() + antiSpawnRadiusDistance)/2);
+        }
+
+        boolean tooClose = true;
+        while(tooClose && attempts > 0) {
+            float xRand = random(Core.GAMEW/2f - Core.BORDER_SIZE/2f + antiSpawnRadiusDistance/2f, Core.GAMEW/2f + Core.BORDER_SIZE/2f - antiSpawnRadiusDistance/2f);
+            float yRand = random(Core.GAMEH/2f - Core.BORDER_SIZE/2f + antiSpawnRadiusDistance/2f, Core.GAMEH/2f + Core.BORDER_SIZE/2f - antiSpawnRadiusDistance/2f);
+
+            tooClose = false;
+            for(Vector2 position : positions.keySet()) {
+                if(position.dst(xRand, yRand) < positions.get(position)) {
+                    tooClose = true;
+                    attempts--;
+                    System.out.println(attempts);
+                    if(attempts == 0) {
+                        fullBoardCounter++;
+                    }
+                    break;
+                }
+            }
+            if(!tooClose) {
+                core.getGameData().addScore(baseExp);
+                engine.createObject(new Vector2(xRand, yRand), ObjectType.GOLD, false, 0, false);
+            }
+        }
+        positions.clear();
+    }
+
+    public float getTimer() {
+        return timer;
     }
 }

@@ -19,7 +19,7 @@ public class MenuScreen implements Screen {
     public void show() {
         batch = core.getBatch();
         scene = new MenuScene(core);
-        Gdx.input.setInputProcessor(new InputMultiplexer(core.getInputManager(), scene.getStage()));
+        core.getInputMultiplexer().addProcessor(scene.getStage());
     }
 
     @Override
@@ -53,7 +53,7 @@ public class MenuScreen implements Screen {
 
     @Override
     public void hide() {
-        Gdx.input.setInputProcessor(null);
+        core.getInputMultiplexer().removeProcessor(scene.getStage());
     }
 
     @Override

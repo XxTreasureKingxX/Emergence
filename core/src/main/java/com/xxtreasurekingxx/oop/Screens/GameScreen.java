@@ -2,6 +2,7 @@ package com.xxtreasurekingxx.oop.Screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -37,9 +38,9 @@ public class GameScreen implements Screen, InputListener {
     @Override
     public void show() {
         System.out.println( "Switched To Game Screen");
-        Gdx.input.setInputProcessor(core.getInputManager());
+        //Gdx.input.setInputProcessor(core.getInputManager());
         engine = new ECSEngine(core, viewport);
-        GameStart(6);
+        GameStart(1);
     }
 
     @Override
@@ -78,7 +79,7 @@ public class GameScreen implements Screen, InputListener {
 
     @Override
     public void hide() {
-        Gdx.input.setInputProcessor(null);
+        engine.hide();
     }
 
     @Override
@@ -127,42 +128,18 @@ public class GameScreen implements Screen, InputListener {
         return positions;
     }
 
-    private void spawnBlackHole(final float x, final float y) {
-        if(core.getGameData().getTokens() > 0) {
-            core.getGameData().removeTokens(1);
+    private void attemptBlackHole(final float x, final float y) {
+        if(engine != null && engine.blackHoleCounter < 1) {
+            Vector2 spawnPoint = viewport.unproject(new Vector2(x, y));
             engine.blackHoleCounter++;
-            engine.getSystem(BlackHoleSystem.class).spawnBlackHole(new Vector2(x, y), ObjectType.HOLE);
+            engine.getSystem(BlackHoleSystem.class).spawnBlackHole(new Vector2(spawnPoint.x, spawnPoint.y), ObjectType.HOLE);
         }
-    }
-
-    @Override
-    public void keyPressed(InputManager manager, GameKeys key) {
-
-    }
-
-    @Override
-    public void keyReleased(InputManager manager, GameKeys key) {
-
     }
 
     @Override
     public boolean keyDown(int keycode) {
         if(engine == null) {
             return false;
-        }
-
-        if(keycode == Input.Keys.Q) {
-            if(core.getGameData().getTokens() > 0) {
-                core.getGameData().removeTokens(1);
-                engine.getSystem(SpawnSystem.class).spawnBaseObject();
-            }
-        }
-
-        if(keycode == Input.Keys.W) {
-            if(core.getGameData().getTokens() > 0) {
-                core.getGameData().removeTokens(1);
-                engine.getSystem(SpawnSystem.class).spawnAnomaly();
-            }
         }
         return false;
     }
@@ -179,10 +156,7 @@ public class GameScreen implements Screen, InputListener {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if(engine != null && engine.blackHoleCounter < 1) {
-            Vector2 spawnPoint = viewport.unproject(new Vector2(screenX, screenY));
-            spawnBlackHole(spawnPoint.x, spawnPoint.y);
-        }
+        attemptBlackHole(screenX, screenY);
         return false;
     }
 

@@ -7,19 +7,16 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.xxtreasurekingxx.oop.Core;
 
-import static com.xxtreasurekingxx.oop.Core.GAMEH;
-import static com.xxtreasurekingxx.oop.Core.GAMEW;
+import static com.xxtreasurekingxx.oop.Core.*;
 
 public class MenuScene {
     private final Core core;
@@ -33,10 +30,18 @@ public class MenuScene {
     private Table background;
 
     private TextButton.TextButtonStyle buttonStyle;
+    private TextButton.TextButtonStyle smallButtonStyle;
+    private Label.LabelStyle panelStyle;
 
     private TextButton playButton;
-    private TextButton exitButton;
     private TextButton settingsButton;
+    private TextButton exitButton;
+
+    private Label infoPanel;
+
+    private TextButton reverseButton;
+    private TextButton forwardButton;
+    private TextButton gamePlayButton;
 
     public MenuScene(final Core core) {
         this.core = core;
@@ -48,9 +53,11 @@ public class MenuScene {
         initFiles();
         createStyles();
         createTables();
+        createLabels();
         createButtons();
 
-        background.add(playButton);
+        background.add(playButton).width(playButton.getWidth()/4).height(playButton.getHeight()/4).row();
+        background.add(settingsButton).width(settingsButton.getWidth()/4).height(settingsButton.getHeight()/4);
         stage.addActor(background);
     }
 
@@ -69,6 +76,16 @@ public class MenuScene {
         buttonStyle.up = new TextureRegionDrawable(atlas.findRegion("buttonUp.png"));
         buttonStyle.down = new TextureRegionDrawable(atlas.findRegion("buttonOver.png"));
         buttonStyle.over = new TextureRegionDrawable(atlas.findRegion("buttonOver.png"));
+
+        smallButtonStyle = new TextButton.TextButtonStyle();
+        smallButtonStyle.font = font;
+        smallButtonStyle.up = new TextureRegionDrawable(atlas.findRegion("smallButtonUp.png"));
+        smallButtonStyle.down = new TextureRegionDrawable(atlas.findRegion("smallButtonOver.png"));
+        smallButtonStyle.over = new TextureRegionDrawable(atlas.findRegion("smallButtonOver.png"));
+
+        panelStyle = new Label.LabelStyle();
+        panelStyle.font = font;
+        panelStyle.background = new TextureRegionDrawable(atlas.findRegion("pane.png"));
     }
 
     private void createTables() {
@@ -77,24 +94,53 @@ public class MenuScene {
         background.background(new TextureRegionDrawable(assetManager.get("ui/menuBackground.png", Texture.class)));
     }
 
+    private void createLabels() {
+        infoPanel = new Label("Tutorial\nTesting", panelStyle);
+        infoPanel.setAlignment(Align.center);
+        infoPanel.setSize(infoPanel.getWidth()/4, infoPanel.getHeight()/4);
+        infoPanel.setPosition(GAMEW/2f - infoPanel.getWidth()/2f, GAMEH/2f - infoPanel.getHeight()/2f);
+    }
+
     private void createButtons() {
         playButton = new TextButton("PLAY", buttonStyle);
-        playButton.setPosition(0 + GAMEW/25f, GAMEH / 2f - playButton.getHeight() / 2);
         playButton.addListener(
             new ClickListener() {
                 public void clicked(InputEvent event, float x, float y) {
-                    System.out.println("clicked play button");
-                    core.setScreen(core.gameScreen);
-                }
-                public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                    System.out.println("entered play button");
-                    //playButton.setColor(Color.GREEN);
-                }
-                public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                    playButton.setColor(Color.WHITE);
+                    if(!tutorial) {
+                        tutorial = true;
+                        openTutorial();
+                    }
                 }
             }
         );
+
+        gamePlayButton = new TextButton("START", buttonStyle);
+        gamePlayButton.setSize(gamePlayButton.getWidth()/4, gamePlayButton.getHeight()/4);
+        gamePlayButton.setPosition(GAMEW/2f - gamePlayButton.getWidth()/2f, GAMEH/2f - gamePlayButton.getHeight()/2f - infoPanel.getHeight()/2f);
+        gamePlayButton.addListener(
+            new ClickListener() {
+                public void clicked(InputEvent event, float x, float y) {
+                    core.setScreen(core.gameScreen);
+                }
+            }
+        );
+
+        settingsButton = new TextButton("SETTINGS", buttonStyle);
+        settingsButton.addListener(
+            new ClickListener() {
+                public void clicked(InputEvent event, float x, float y) {
+
+                }
+            }
+        );
+
+        reverseButton = new TextButton("<", smallButtonStyle);
+        reverseButton.setSize(reverseButton.getWidth()/4, reverseButton.getHeight()/4);
+        reverseButton.setPosition(GAMEW/2f - reverseButton.getWidth()/2f - infoPanel.getWidth()/2, GAMEH/2f - reverseButton.getHeight()/2f);
+
+        forwardButton = new TextButton(">", smallButtonStyle);
+        forwardButton.setSize(forwardButton.getWidth()/4, forwardButton.getHeight()/4);
+        forwardButton.setPosition(GAMEW/2f - forwardButton.getWidth()/2f + infoPanel.getWidth()/2, GAMEH/2f - forwardButton.getHeight()/2f);
     }
 
     private void initFiles() {
@@ -102,6 +148,13 @@ public class MenuScene {
         font.setColor(Color.BLACK);
 
         atlas = assetManager.get("ui/main.atlas", TextureAtlas.class);
+    }
+
+    private void openTutorial() {
+        stage.addActor(infoPanel);
+        stage.addActor(reverseButton);
+        stage.addActor(forwardButton);
+        stage.addActor(gamePlayButton);
     }
 
     public Stage getStage() {

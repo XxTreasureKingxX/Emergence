@@ -3,6 +3,7 @@ package com.xxtreasurekingxx.oop.ECS;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -28,6 +29,7 @@ public class ECSEngine extends PooledEngine {
     private final GameUISystem gameUISystem;
     private final RenderSystem renderSystem;
     private final ObjectAntiSpawnRadiusSystem OASRSystem;
+    private final CardHandleSystem cardSystem;
 
     public int blackHoleCounter = 0;
     public Vector2 blackHolePosition;
@@ -50,7 +52,8 @@ public class ECSEngine extends PooledEngine {
         physicsSystem = new PhysicsSystem();
         bodyHandleSystem = new BodyHandleSystem(this, physicsSystem.getWorld());
         collisionSystem = new CollisionSystem(core, this, physicsSystem.getContactListener());
-        gameUISystem = new GameUISystem(core, viewport);
+        cardSystem = new CardHandleSystem(this);
+        gameUISystem = new GameUISystem(core, viewport, this);
         OASRSystem = new ObjectAntiSpawnRadiusSystem(core, batch, viewport);
         renderSystem = new RenderSystem(core, batch, physicsSystem.getWorld(), viewport);
 
@@ -61,6 +64,7 @@ public class ECSEngine extends PooledEngine {
         this.addSystem(physicsSystem);
         this.addSystem(collisionSystem);
         this.addSystem(new EvolutionSystem(this));
+        this.addSystem(cardSystem);
         this.addSystem(gameUISystem);
         this.addSystem(bodyHandleSystem);
         this.addSystem(new BackgroundRenderSystem(core, batch, viewport));
@@ -72,7 +76,8 @@ public class ECSEngine extends PooledEngine {
         Entity object = this.createEntity();
 
         //B2DComponent
-        B2DComponent b2DComponent = this.createComponent(B2DComponent.class);
+        //B2DComponent b2DComponent = this.createComponent(B2DComponent.class);
+        B2DComponent b2DComponent = new B2DComponent();
         b2DComponent.renderPosition = new Vector2(pos);
         b2DComponent.width = type.getAnimationType().getDiameter();
         b2DComponent.height = type.getAnimationType().getDiameter();
@@ -87,25 +92,30 @@ public class ECSEngine extends PooledEngine {
         object.add(b2DComponent);
 
         //AnimationComponent
-        AnimationComponent animationComponent = this.createComponent(AnimationComponent.class);
+        //AnimationComponent animationComponent = this.createComponent(AnimationComponent.class);
+        AnimationComponent animationComponent = new AnimationComponent();
         animationComponent.type = type.getAnimationType();
         object.add(animationComponent);
 
         //ObjectComponent
-        ObjectComponent objectComponent = this.createComponent(ObjectComponent.class);
+        //ObjectComponent objectComponent = this.createComponent(ObjectComponent.class);
+        ObjectComponent objectComponent = new ObjectComponent();
         objectComponent.type = type;
         objectComponent.exp = startingExp;
         object.add(objectComponent);
 
-        //ExpComponent
-        ActorComponent actorComponent = this.createComponent(ActorComponent.class);
-        actorComponent.needsActor = !squareShape;
+        //ActorComponent
+        //ActorComponent actorComponent = this.createComponent(ActorComponent.class);
+        ActorComponent actorComponent = new ActorComponent();
+        actorComponent.needsActor = squareShape;
         if(type == ObjectType.ANOMALY) {
             actorComponent.needsActor = false;
         }
         object.add(actorComponent);
 
-        ParticleComponent particleComponent = this.createComponent(ParticleComponent.class);
+        //ParticleComponent
+        //ParticleComponent particleComponent = this.createComponent(ParticleComponent.class);
+        ParticleComponent particleComponent = new ParticleComponent();
         particleComponent.particles = new Array<>();
         particleComponent.position = pos;
         particleComponent.type = ParticleComponent.ParticlesType.EXPLOSION;
@@ -123,14 +133,16 @@ public class ECSEngine extends PooledEngine {
         final Entity entity = this.createEntity();
         System.out.println("creating collision ring");
         //B2DComponent
-        B2DComponent b2DComponent = this.createComponent(B2DComponent.class);
+        //B2DComponent b2DComponent = this.createComponent(B2DComponent.class);
+        B2DComponent b2DComponent = new B2DComponent();
         b2DComponent.renderPosition = new Vector2(position);
         b2DComponent.width = type.getAnimationType().getDiameter();
         b2DComponent.height = type.getAnimationType().getDiameter();
         entity.add(b2DComponent);
 
         //AnimationComponent
-        AnimationComponent animationComponent = this.createComponent(AnimationComponent.class);
+        //AnimationComponent animationComponent = this.createComponent(AnimationComponent.class);
+        AnimationComponent animationComponent = new AnimationComponent();
         animationComponent.type = RING;
         entity.add(animationComponent);
 
@@ -140,7 +152,8 @@ public class ECSEngine extends PooledEngine {
     public void createGameBorder() {
         final Entity border = this.createEntity();
 
-        B2DComponent b2DComponent = this.createComponent(B2DComponent.class);
+        //B2DComponent b2DComponent = this.createComponent(B2DComponent.class);
+        B2DComponent b2DComponent = new B2DComponent();
         b2DComponent.renderPosition = new Vector2(Core.GAMEW/2f, Core.GAMEH/2f);
         b2DComponent.height = Core.BORDER_SIZE;
         b2DComponent.width = b2DComponent.height;
@@ -154,5 +167,9 @@ public class ECSEngine extends PooledEngine {
     public void resize(int width, int height) {
         OASRSystem.resize(width, height);
         viewport.update(width, height);
+    }
+
+    public void hide() {
+        core.getInputMultiplexer().removeProcessor(gameUISystem.getStage());
     }
 }

@@ -7,16 +7,10 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.xxtreasurekingxx.oop.Core;
 import com.xxtreasurekingxx.oop.ECS.Components.AnimationComponent;
@@ -113,9 +107,15 @@ public class RenderSystem extends EntitySystem {
                 if(animationComponent.type == AnimationType.HOLE) {
                     width *= 2.3f;
                     height *= 2.3f;
-                } else if(animationComponent.type == AnimationType.URANUS || animationComponent.type == AnimationType.SATURN) {
-                    width *= 1.195f;
-                    height *= 1.195f;
+                } else if(animationComponent.type == AnimationType.SATURN) {
+                    width *= 1.2f;
+                    height *= 1.2f;
+                } else if (animationComponent.type == AnimationType.HOLES) {
+                    width *= 1.25f;
+                    height *= 1.25f;
+                } else if (animationComponent.type == AnimationType.BLUSS) {
+                    width *= 1.14f;
+                    height *= 1.14f;
                 }
 
                 frame.setBounds(b2dComponent.renderPosition.x - width/2, b2dComponent.renderPosition.y - height/2, width, height);
@@ -142,7 +142,11 @@ public class RenderSystem extends EntitySystem {
         if(animation == null) {
             System.out.println("Creating animation for " + type);
             final TextureAtlas.AtlasRegion region = assetManager.get(type.getAtlas(), TextureAtlas.class).findRegion(type.getRegion());
-            final TextureRegion[][] textureRegions = region.split(REGION_SIZE, REGION_SIZE);
+            int regionSize = REGION_SIZE;
+            if (type == AnimationType.RING) {
+                regionSize = type.getDiameter();
+            }
+            final TextureRegion[][] textureRegions = region.split(regionSize, regionSize);
             animation = new Animation<>(type.getFrameRate(), getAnimationSequence(textureRegions[type.getRow()]));
             animations.put(type, animation);
         }

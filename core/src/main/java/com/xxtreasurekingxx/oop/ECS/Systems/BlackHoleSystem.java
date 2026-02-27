@@ -26,7 +26,8 @@ public class BlackHoleSystem extends IteratingSystem {
         Entity object = getEngine().createEntity();
 
         //B2DComponent
-        B2DComponent b2DComponent = getEngine().createComponent(B2DComponent.class);
+        //B2DComponent b2DComponent = getEngine().createComponent(B2DComponent.class);
+        B2DComponent b2DComponent = new B2DComponent();
         b2DComponent.renderPosition = new Vector2(pos);
         b2DComponent.width = type.getAnimationType().getDiameter();
         b2DComponent.height = type.getAnimationType().getDiameter();
@@ -36,17 +37,20 @@ public class BlackHoleSystem extends IteratingSystem {
         object.add(b2DComponent);
 
         //AnimationComponent
-        AnimationComponent animationComponent = getEngine().createComponent(AnimationComponent.class);
+        //AnimationComponent animationComponent = getEngine().createComponent(AnimationComponent.class);
+        AnimationComponent animationComponent = new AnimationComponent();
         animationComponent.type = type.getAnimationType();
         object.add(animationComponent);
 
         //ObjectComponent
-        ObjectComponent objectComponent = getEngine().createComponent(ObjectComponent.class);
+        //ObjectComponent objectComponent = getEngine().createComponent(ObjectComponent.class);
+        ObjectComponent objectComponent = new ObjectComponent();
         objectComponent.type = type;
         object.add(objectComponent);
 
         //BlackHoleComponent
-        BlackHoleComponent blackHoleComponent = getEngine().createComponent(BlackHoleComponent.class);
+        //BlackHoleComponent blackHoleComponent = getEngine().createComponent(BlackHoleComponent.class);
+        BlackHoleComponent blackHoleComponent = new BlackHoleComponent();
         blackHoleComponent.coolDown = 2;
         blackHoleComponent.coolDownTimer = 2;
         object.add(blackHoleComponent);

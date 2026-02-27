@@ -18,6 +18,8 @@ public class CollisionSystem extends EntitySystem implements WorldContactListene
     private final ECSEngine engine;
     private final Core core;
 
+    public static boolean collisionStarted;
+
     public CollisionSystem(final Core core, final ECSEngine engine, final WorldContactListener contactListener) {
         this.engine = engine;
         this.core = core;
@@ -40,15 +42,15 @@ public class CollisionSystem extends EntitySystem implements WorldContactListene
 
         if(OCA != null && OCB != null) {
             //delete all objects that collide with black hole (prio 1)
-            if(OCA.type == ObjectType.HOLE) {
-                BCB.needsDelete = true;
-                ACB.needsDelete = true;
-                core.getGameData().removeScore(OCB.exp);
-            } else if(OCB.type == ObjectType.HOLE) {
-                BCA.needsDelete = true;
-                ACA.needsDelete = true;
-                core.getGameData().removeScore(OCA.exp);
-            }
+//            if(OCA.type == ObjectType.HOLE) {
+//                BCB.needsDelete = true;
+//                ACB.needsDelete = true;
+//                core.getGameData().removeScore(OCB.exp);
+//            } else if(OCB.type == ObjectType.HOLE) {
+//                BCA.needsDelete = true;
+//                ACA.needsDelete = true;
+//                core.getGameData().removeScore(OCA.exp);
+//            }
             //do nothing more if any objects should not do anything on collide (prio 2)
             if(OCA.type == ObjectType.ANOMALY || OCB.type == ObjectType.ANOMALY ||
                 OCA.type == ObjectType.HOLE    || OCB.type == ObjectType.HOLE ||
@@ -56,34 +58,35 @@ public class CollisionSystem extends EntitySystem implements WorldContactListene
                 return;
             }
 
-            if(OCA.type != OCB.type) {
+            collisionStarted = true;
+
+            if(OCA.type == ObjectType.GOLD && OCB.type == ObjectType.GOLD) {
                 return;
             }
 
-            if(OCA.exp == OCB.exp) {
+            if(OCA.type == OCB.type) {
                 BCB.needsDelete = true;
                 ACB.needsDelete = true;
-                OCA.exp += OCA.exp == 0 ? baseExp : OCB.exp;
-                core.getGameData().addScore(OCA.exp == 0 ? baseExp : OCB.exp);
-                core.getGameData().addTokens(OCA.type.getUpgradeThreshold());
-            } else if(OCA.exp > OCB.exp) {
-                BCB.needsDelete = true;
-                ACB.needsDelete = true;
-                OCA.exp += OCB.exp > 0 ? OCB.exp : baseExp;
+                OCA.exp += OCB.exp;
                 core.getGameData().addScore(OCB.exp > 0 ? OCB.exp : baseExp);
-                core.getGameData().addTokens(OCA.type.getUpgradeThreshold());
-            } else {
+                core.getGameData().addTokens(1);
+            } else if(OCA.type == ObjectType.GOLD) {
                 BCA.needsDelete = true;
                 ACA.needsDelete = true;
-                OCB.exp += OCA.exp > 0 ? OCA.exp : baseExp;
+                OCB.exp *= 2;
+                core.getGameData().addScore(OCB.exp > 0 ? OCB.exp : baseExp);
+                core.getGameData().addTokens(1);
+            } else if(OCB.type == ObjectType.GOLD) {
+                BCB.needsDelete = true;
+                ACB.needsDelete = true;
+                OCA.exp *= 2;
                 core.getGameData().addScore(OCA.exp > 0 ? OCA.exp : baseExp);
-                core.getGameData().addTokens(OCB.type.getUpgradeThreshold());
+                core.getGameData().addTokens(1);
             }
         }
     }
 
     @Override
     public void endCollision(Entity entityA, Entity entityB) {
-
     }
 }

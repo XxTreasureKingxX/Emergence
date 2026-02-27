@@ -6,13 +6,14 @@ public enum ObjectType {
 
     SUN(AnimationType.SUN, 0.9f, null, 1000000),
     JUPITER(AnimationType.JUPITER, 0.8f, SUN, baseExp*256),
-    SATURN(AnimationType.SATURN, 0.7f, JUPITER, baseExp*128),
-    URANUS(AnimationType.URANUS, 0.6f, SATURN, baseExp*64),
-    NEPTUNE(AnimationType.NEPTUNE, 0.5f, URANUS, baseExp*32),
-    EARTH(AnimationType.EARTH, 0.4f, NEPTUNE, baseExp*16),
-    VENUS(AnimationType.VENUS, 0.3f, EARTH, baseExp*8),
-    MARS(AnimationType.MARS, 0.2f, VENUS, baseExp*4),
-    MERCURY(AnimationType.MERCURY, 0.1f, MARS, baseExp*2),
+    SATURN(AnimationType.EARTH, 0.7f, JUPITER, baseExp*128),
+    URANUS(AnimationType.SATURN, 0.6f, SATURN, baseExp*64),
+    NEPTUNE(AnimationType.HOLES, 0.5f, URANUS, baseExp*32),
+    EARTH(AnimationType.PASTEL, 0.4f, NEPTUNE, baseExp*16),
+    VENUS(AnimationType.GREEN, 0.3f, EARTH, baseExp*8),
+    MARS(AnimationType.BLUSS, 0.2f, VENUS, baseExp*4),
+    MERCURY(AnimationType.TODO, 0.1f, MARS, baseExp*2),
+    GOLD(AnimationType.GOLD, 1f, null, 1000000),
     HOLE(AnimationType.HOLE, 100, null, 1000000),
     ANOMALY(AnimationType.ANOMALY, 5f, null, 1000000);
 

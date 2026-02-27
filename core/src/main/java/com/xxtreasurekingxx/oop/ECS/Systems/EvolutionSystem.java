@@ -30,13 +30,13 @@ public class EvolutionSystem extends IteratingSystem {
         if(objectComponent.exp >= objectComponent.type.getUpgradeThreshold()) {
             actorComponent.needsDelete = true;
             b2dComponent.needsDelete = true;
-            if(objectComponent.type != ObjectType.SUN) {
-                upgradeObject(objectComponent.type.getUpgrade(), b2dComponent, objectComponent, particleComponent);
+            if(objectComponent.type != ObjectType.SUN ) {
+                upgradeObject(objectComponent.type.getUpgrade(), b2dComponent, objectComponent);
             }
         }
     }
 
-    private void upgradeObject(final ObjectType type, final B2DComponent b2dComponent, final ObjectComponent objectComponent, final ParticleComponent particleComponent) {
+    private void upgradeObject(final ObjectType type, final B2DComponent b2dComponent, final ObjectComponent objectComponent) {
         engine.createCollisionRing(type, b2dComponent.renderPosition);
         engine.createObject(b2dComponent.renderPosition, type, false, objectComponent.exp, true);
     }
